@@ -1,0 +1,7 @@
+[ file=.*pager.*     mapTo=Pager ]
+[ file=vm_map.*      mapTo=VirtAddressMaint ]
+[ file=vm_fault\.c   mapTo=KernelFaultHdler ]
+[ dir=[un]fs         mapTo=FileSystem ]
+[ dir=sparc/mem.*    mapTo=FileSystem ]
+[ file=pmap.*        mapTo=HardwareTrans ]
+[ file=vm_pageout\.c mapTo=VMPolicy]

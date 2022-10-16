@@ -1,0 +1,20 @@
+#include <unistd.h>
+
+#define DO_CACHE (1)
+
+int get_ir_clang(char *fpath){
+  int p[2], ret;
+
+  ret = pipe(p);
+  if (ret != 0) {
+    perror("pipe");
+    return;
+  }
+
+  // system()
+
+  
+
+  
+}
+

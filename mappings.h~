@@ -1,0 +1,31 @@
+#include <regex.h>
+
+#define MAPPING_LINE_MAX_LEN 100
+#define SYSTEM_MAX_NAME_LEN 50
+
+enum mapping_types {INVALID=0, FUNCTION, CLASS, SRC_FILE, SRC_DIR};
+struct mapping {
+  char type, *pattern, *sys_name;
+};
+
+regex_t map_reg; void parse_prep();
+
+struct mapping parse_line(char *line);
+
+
+// -----------------------------------------------------------------------------
+
+#define MAPPINGS_INIT_SIZE 50
+
+// This is just a dynamic expanding list implementation that bundles all the info
+// for the size and element count of the list together.
+// Speed of random access outdoes that of linked lists, especially on modern hardware.
+struct mappings {
+  int sizes[5], elems[5];
+  struct mapping *m[5];
+};
+
+void init_mappings(struct mappings *ms);
+void insert_mapping(struct mappings *ms, struct mapping m);
+
+struct mapping *matching_mapping(const char *name, struct mapping *ms, int n);
