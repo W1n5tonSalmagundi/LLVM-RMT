@@ -1,4 +1,3 @@
-  
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
@@ -6,7 +5,10 @@
 #include <stdlib.h>
 #include <fnmatch.h>
 #include <assert.h>
+
 #include "mappings.h"
+
+regex_t map_reg; 
 
 void parse_prep(){
   int ret = regcomp(&map_reg,
@@ -64,6 +66,7 @@ struct mapping parse_line(char *line){
 }
 
 void init_mappings(struct mappings *ms){
+  // TODO: Refactor magic number
   int init_size = 10;
   for (int i = 0; i < 5; i++) {
     ms->sizes[i] = init_size;

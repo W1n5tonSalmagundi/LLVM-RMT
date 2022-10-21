@@ -18,8 +18,6 @@ struct matchings {
   struct matching *m;
 };
 
-struct matchings eargs;
-
 void init_matchings(struct matchings *ms);
   
 double hash_matching(struct matching *m);
@@ -29,11 +27,11 @@ void reload_matchings(struct matchings *ms);
 
 char *matches_a_mapping(const char *func_name, struct mappings mappings, int type);
 
-char *match_in_dir(const char *dir_name, struct mappings mappings, int );
-char *match_in_file(const char *file_name, struct mappings mappings, int type);
+char *match_in_dir(const char *dir_name, struct mappings *mappings);
+char *match_in_file(const char *file_name, struct mappings *mappings);
 
-char *match_on_methods(const char *meth_name, struct mappings mappings, int type);
-char *match_on_func(const char *func_name, struct mappings mappings, int type);
+char *match_on_methods(const char *meth_name, struct mappings *mappings);
+char *match_on_func(const char *func_name, struct mappings *mappings);
 
-char *match_on_name(const char *name, struct mappings mappings);
+char *match_on_name(const char *name, struct mappings *mappings);
 

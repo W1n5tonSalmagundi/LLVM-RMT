@@ -86,9 +86,7 @@ int main(int argc, char *argv[]){
     perror("malloc"); exit(1);
   }
 
-  struct mappings *ms;
-
-  init_mappings(&ms);
+  struct mappings ms; init_mappings(&ms);
 
   while ( (fgets(slab_head + str_offset, MAPPING_LINE_MAX_LEN, mappings_file)) != NULL) {
     // Reallocating more memory for the next iteration in advance so we can continue to not copy strings from a separate buffer.
@@ -134,9 +132,6 @@ int main(int argc, char *argv[]){
     perror("chdir"); return 1;
   }
 
-  printf("\n");
-  init_extra_args();
-  match_in_dir(".", );
-  
+  match_in_dir(".", &ms);
   return 0;
 }

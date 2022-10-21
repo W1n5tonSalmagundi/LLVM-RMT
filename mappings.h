@@ -11,7 +11,7 @@ struct mapping {
   char type, *pattern, *sys_name;
 };
 
-regex_t map_reg; void parse_prep();
+void parse_prep();
 
 struct mapping parse_line(char *line);
 

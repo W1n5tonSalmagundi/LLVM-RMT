@@ -1,11 +1,16 @@
-#include "matchings.h"
+#define _XOPEN_SOURCE 601
+#include <stdlib.h>
 
 #include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <ftw.h>
+#include <limits.h>
+#include <math.h>
+
+#include "matchings.h"
+
+struct matchings gmatches;
 
 void init_matchings(struct matchings *ms){
   ms->load_factor = MTCHS_DEF_LOAD;
@@ -36,19 +41,9 @@ double hash_matching2(struct matching *m){
   return ret_i;
 }
 
-void insert_matching(struct matchings *ms, struct matching *m){
-  m->hash = hash_mapping(m);
-  
-  reinsert_matching(ms, m);
-
-  if ((ms->sizes * ms->load_factor) < ++ms->elems) {
-    reload_matchings(ms);
-  } 
-}
-
-int reinsert_matching(struct matchings *ms, struct matching *m){
+void reinsert_matching(struct matchings *ms, struct matching *m){
   unsigned int i, j, k;
-  struct mapping *table = ms->m;
+  struct matching *table = ms->m;
 
   j = 0;
   i = ((int) round( m->hash )) % (k = ms->sizes );
@@ -60,6 +55,16 @@ int reinsert_matching(struct matchings *ms, struct matching *m){
   }
 
   memcpy(table + i, m, sizeof(struct matching));
+}
+
+void insert_matching(struct matchings *ms, struct matching *m){
+  m->hash = hash_matching(m);
+  
+  reinsert_matching(ms, m);
+
+  if ((ms->sizes * ms->load_factor) < ++ms->elems) {
+    reload_matchings(ms);
+  } 
 }
 
 void reload_matchings(struct matchings *ms){
@@ -76,12 +81,13 @@ void reload_matchings(struct matchings *ms){
     }
   }
 
-  struct mapping *old_ms_table = ms->m;
+  struct matching *old_ms_table = ms->m;
   memmove(ms, &new_ms, sizeof(struct matchings));
   free(old_ms_table);
 }
 
-char *_match_in_dir(const char *fpath, const struct stat *stat_buf,
+
+int _match_in_dir(const char *fpath, const struct stat *stat_buf,
 		  int typeflag, struct FTW *ftwbuf){
 
   switch (typeflag) {
@@ -100,13 +106,13 @@ char *_match_in_dir(const char *fpath, const struct stat *stat_buf,
   }
     
   case FTW_DNR: {
-    const char *abs_path = realpath(fpath, NULL);
+    char *abs_path = realpath(fpath, NULL);
     if (abs_path == NULL) {
       perror("realpath");
       fprintf(stderr,
-	      "realpath failed to resolve the unreadable"
+	      "failed to resolve the unreadable"
 	      "directory at relative path \"%s\"\n",
-	      abs_path);
+	      fpath);
     } else {
       fprintf(stderr,
 	      "The directory at \"%s\" cannot be read.\n", 
