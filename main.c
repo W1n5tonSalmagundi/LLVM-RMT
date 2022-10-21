@@ -10,120 +10,39 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "mappings.h"
+//#include "mappings.h"
+#include "matchings.h"
 
 
-struct open_project
-{
-  int num_files;
-  char **source_names, **out_names;
-};
 
-// Possble TODO:
-// Arrays of structs are likely inferior to arrays within structs
-// for purposes of cache performance, multithreading, and serialization.
-// That can be fixed later as the program takes shape.
-// For now, these are more intuitive.
-struct sys_link
-{
-  // struct system *depends_on;
-  const char *fname;
-};
-
-struct system {
-  char name[SYSTEM_MAX_NAME_LEN];
-  int num_links;
-  struct sys_link *links;
-};
-
-int opt_bits = 0;
 #define INTERACTIVE_MODE (( opt_bits & (1 << 0)))
 /* The significance of this is more upfront work in parsing
    mappings, and arranging data, to make it both faster to access
    and compare things, but more importantly, to arrange it for serialization
-   and loading directly from a file. */
+   and loading directly from a file.
+
+   ...When we actually implement that.*/
 #define DO_CACHE (( opt_bits & (1 << 1)))
+int opt_bits;
+
+
+/* struct open_project { */
+/*   int num_files; */
+/*   char **source_names, **out_names; */
+/* }; */
+
+
 
 /* This acts like our own way to pass additional arguments across nftw calls
    while still using a function type that can still be used by nftw.
 
    We manage it just just like how C manages the program stack, restoring as needed after
    nftw calls within nftw wrappers. */
-struct ftw_extra_args {
-  struct mappings ms;
-};
-struct ftw_extra_args eargs;
+/* struct ftw_extra_args { */
+/*   struct mappings ms; */
+/* }; */
 
-void init_extra_args(){
-  return;
-}
-
-int map_functions(const char *fpath, const struct stat *stat_buf,
-		  int typeflag, struct FTW *ftwbuf){
-
-  struct mappings *ms = &eargs.ms;
-
-  switch (typeflag) {
-  case FTW_F: {
-    //fprintf(stdout, "fpath: %s \n", fpath);
-
-    eargs.matchings[SRC_FILE] =
-      matching_mapping(fpath + 2, ms->m[SRC_FILE], ms->elems[SRC_FILE]);
-      
-      
-    if (eargs.matchings[SRC_FILE] != NULL) {
-      printf("Mapping pattern: %s \n", eargs.matchings[SRC_FILE]->pattern);
-      printf("To system named: %s \n\n", eargs.matchings[SRC_FILE]->sys_name);
-    } else {
-      printf("NULL matching.\n\n");
-    }
-    // Get
-
-    // Final parse call
-    
-
-    break;
-  }
-    
-  case FTW_D: {
-
-    // eargs.matchings[SRC_FILE] =
-    // matching_mapping(fpath + 2, ms->m[SRC_FILE], ms->elems[SRC_FILE]);
-    
-    break;
-  }
-    
-  case FTW_DNR: {
-    const char *abs_path = realpath(fpath, NULL);
-    if (abs_path == NULL) {
-      perror("realpath");
-      fprintf(stderr,
-	      "realpath failed to resolve the unreadable"
-	      "directory at relative path \"%s\"\n",
-	      abs_path);
-    } else {
-      fprintf(stderr,
-	      "The directory at \"%s\" cannot be read.\n", 
-	      abs_path);
-      free(abs_path);
-    }
-    fprintf(stderr, "Do you have rx permissions on the directory?\n");
-  }
-    
-default:
-    break;
-  }
-
-  return 0;
-}
-
-void build_model_on_dir(char *fpath){
-  struct mapping *prev_matching = eargs.matchings[SRC_DIR];
-  nftw(fpath, map_functions, 30, 0);
-  eargs.matchings[SRC_DIR] = prev_matching;
-}
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]){
   int ret;
   const char *opt_str = "sic:";
   char *mappings_file_path = "./test-mappings.config";
@@ -167,7 +86,9 @@ int main(int argc, char *argv[]) {
     perror("malloc"); exit(1);
   }
 
-  init_mappings(&eargs.ms);
+  struct mappings *ms;
+
+  init_mappings(&ms);
 
   while ( (fgets(slab_head + str_offset, MAPPING_LINE_MAX_LEN, mappings_file)) != NULL) {
     // Reallocating more memory for the next iteration in advance so we can continue to not copy strings from a separate buffer.
@@ -182,8 +103,8 @@ int main(int argc, char *argv[]) {
     struct mapping m = parse_line(slab_head + str_offset);
     // fprintf(stderr, "m: %d, %s, %s \n", m.type, m.pattern, m.sys_name);
 
-    if (m.type != INVALID) {
-      insert_mapping(&eargs.ms, m);
+    if (m.type != INVALID_MAPPING) {
+      insert_mapping(&ms, m);
       str_offset += s_len;
     }
   }
@@ -215,7 +136,7 @@ int main(int argc, char *argv[]) {
 
   printf("\n");
   init_extra_args();
-  build_model_on_dir(".");
+  match_in_dir(".", );
   
   return 0;
 }

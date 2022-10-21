@@ -4,8 +4,7 @@
 #define SYSTEM_MAX_NAME_LEN 50
 
 #define MAPPING_NUM_TYPES 4
-enum mapping_types {INVALID_MAPPING=-1,
-		    FUNCTION_MAPPING=0, CLASS_MAPPING, SRC_FILE_MAPPING, SRC_DIR_MAPPING};
+enum mapping_types {INVALID_MAPPING=-1, FUNCTION_MAPPING=0, CLASS_MAPPING, SRC_FILE_MAPPING, SRC_DIR_MAPPING};
 
 
 struct mapping {
@@ -39,5 +38,5 @@ struct mappings {
 void init_mappings(struct mappings *ms);
 void insert_mapping(struct mappings *ms, struct mapping m);
 
-char *matches_mapping(const char *name, struct mappings mappings, int type);
+char *matches_mapping(const char *name, struct mappings *mappings, int type);
 

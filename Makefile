@@ -1,6 +1,6 @@
 CFLAGS=-std=c99 -Wall -Wextra -g
 
-llvm-rmt: main.o mappings.o
+llvm-rmt: main.o mappings.o matchings.o
 	gcc $(CFLAGS) -o $@ $^
 
 %.o : %.c

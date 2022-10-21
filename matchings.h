@@ -4,7 +4,8 @@
 /* #define MTCH_NAME_BLK_SIZE (sizeof(long)/sizeof(char)) */
 /* #define MTCH_L_TAB_LEN (MTCH_NAME_MAX_LEN / MTCH_NAME_BLK_SIZE) */
 /* #define MTCH_L_TAB_TRAIL_LEN ( MTCH_NAME_MAX_LEN - MTCH_L_TAB_LEN * MTCH_NAME_BLK_SIZE) */
-#define MTCHS_INITIAL_SIZE 100
+#define MTCHS_DEF_LOAD 0.5
+#define MTCHS_DEF_SIZE 100
 
 struct matching {
   double hash;
@@ -14,16 +15,15 @@ struct matching {
 struct matchings {
   double load_factor;
   int sizes, elems;
-  struct mapping *m;
+  struct matching *m;
 };
 
 struct matchings eargs;
 
-void init_matchings(struct matchings *ms){
+void init_matchings(struct matchings *ms);
   
-}
-
-int hash_matching(struct matching *m);
+double hash_matching(struct matching *m);
+double hash_matching2(struct matching *m);
 void insert_matching(struct matchings *ms, struct matching *m);
 void reload_matchings(struct matchings *ms);
 

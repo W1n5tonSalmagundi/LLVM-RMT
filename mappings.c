@@ -1,6 +1,3 @@
-/*
-  
- */
   
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,16 +30,6 @@ struct mapping parse_line(char *line){
     sret.type = INVALID_MAPPING; return sret;
   }
 
-  if (matches[2].rm_so == -1) {
-    fprintf(stderr, "Invalid mapping, expected %s pattern specification: %s", mapping_type, line);
-    sret.type = INVALID_MAPPING; return sret;
-  }
-
-  if (matches[3].rm_so == -1) {
-    fprintf(stderr, "Invalid mapping, expected a system name to be specified: %s", line);
-    sret.type = INVALID_MAPPING; return sret;
-  }
-
   char *mapping_type = line + matches[1].rm_so;
   // To mask the equal sign in the declaration and terminate the str in mapping_type
   line[matches[1].rm_eo] = '\0';
@@ -52,6 +39,16 @@ struct mapping parse_line(char *line){
   else if ( strcmp(mapping_type, "class") == 0 ) { sret.type = CLASS_MAPPING; }
   else if ( strcmp(mapping_type, "file") == 0 ) { sret.type = SRC_FILE_MAPPING; }
   else { sret.type = SRC_DIR_MAPPING; }
+  
+  if (matches[2].rm_so == -1) {
+    fprintf(stderr, "Invalid mapping, expected %s pattern specification: %s", mapping_type, line);
+    sret.type = INVALID_MAPPING; return sret;
+  }
+
+  if (matches[3].rm_so == -1) {
+    fprintf(stderr, "Invalid mapping, expected a system name to be specified: %s", line);
+    sret.type = INVALID_MAPPING; return sret;
+  }
   
   char *mapping_pattern = line + matches[2].rm_so;
   int pattern_len = matches[2].rm_eo - matches[2].rm_so;
@@ -87,7 +84,7 @@ void insert_mapping(struct mappings *ms, struct mapping m){
   ms->m[i][ms->elems[i]++] = m;
 }
 
-char *matches_mapping(const char *name, struct mappings mappings, int type){
+char *matches_mapping(const char *name, struct mappings *mappings, int type){
   struct mapping *ms = mappings->m[type];
   int n = mappings->elems[type];
   
