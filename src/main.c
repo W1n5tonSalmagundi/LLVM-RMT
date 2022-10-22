@@ -132,6 +132,6 @@ int main(int argc, char *argv[]){
     perror("chdir"); return 1;
   }
 
-  match_in_dir(".", ms);
+  match_in_dir(".", &ms);
   return 0;
 }
