@@ -1,6 +1,0 @@
-#include "mappings.h"
-
-struct matching {
-  char type, *name, *system1, *system2;
-};
-

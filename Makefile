@@ -1,12 +1,15 @@
 CFLAGS=-std=c99 -Wall -Wextra -g
 
-llvm-rmt: main.o mappings.o matchings.o
+bin-dir=bin
+src-dir=src
+
+bin/llvm-rmt: bin/main.o bin/mappings.o bin/matchings.o bin/llvm-ir-dispatch.o
 	gcc $(CFLAGS) -o $@ $^ -lm
 
-%.o : %.c
-	gcc $(CFLAGS) -c $<
+${bin-dir}/%.o : ${src-dir}/%.c
+	gcc $(CFLAGS) -c $< -o $@
 
 .PHONY = clean
 clean :
-	rm *.o llvm-rmt *~
+	rm ${bin-dir}/* llvm-rmt
 
